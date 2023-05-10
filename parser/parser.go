@@ -108,5 +108,6 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 		return true
 	}
 
+	p.peekError(t)
 	return false
 }
