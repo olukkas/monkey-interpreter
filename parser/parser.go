@@ -83,7 +83,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Value: p.curToken.Literal,
 	}
 
-	if !peekTokenIs(p, token.Semicolon) {
+	if !peekTokenIs(p, token.Assing) {
 		return nil
 	}
 
