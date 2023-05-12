@@ -32,3 +32,10 @@ func expectPeek(p *Parser, t token.TokenType) bool {
 	peekError(p, t)
 	return false
 }
+
+func loadPrefixes(p *Parser) map[token.TokenType]prefixParseFn {
+	return map[token.TokenType]prefixParseFn{
+		token.Ident: p.parseIdentifier,
+		token.Int:   p.parseIntegerLiteral,
+	}
+}
