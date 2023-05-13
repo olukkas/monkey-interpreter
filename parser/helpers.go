@@ -33,7 +33,7 @@ func expectPeek(p *Parser, t token.TokenType) bool {
 	return false
 }
 
-func loadPrefixes(p *Parser) map[token.TokenType]prefixParseFn {
+func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 	return map[token.TokenType]prefixParseFn{
 		token.Ident: p.parseIdentifier,
 		token.Int:   p.parseIntegerLiteral,
@@ -42,7 +42,36 @@ func loadPrefixes(p *Parser) map[token.TokenType]prefixParseFn {
 	}
 }
 
+func loadInfixFuncs(p *Parser) map[token.TokenType]infixParseFn {
+	return map[token.TokenType]infixParseFn{
+		token.Plus:     p.parseInfixExpression,
+		token.Minus:    p.parseInfixExpression,
+		token.Slash:    p.parseInfixExpression,
+		token.Eq:       p.parseInfixExpression,
+		token.NotEq:    p.parseInfixExpression,
+		token.Lt:       p.parseInfixExpression,
+		token.Gt:       p.parseInfixExpression,
+		token.Asterisk: p.parseInfixExpression,
+	}
+}
+
 func noPrefixParseFnError(p *Parser, t token.TokenType) {
 	msg := fmt.Sprintf("no prefix parse function for %s", t)
 	p.errors = append(p.errors, msg)
+}
+
+func peekPrecedence(p *Parser) int {
+	if precedence, ok := precedences[p.peekToken.Type]; ok {
+		return precedence
+	}
+
+	return Lowest
+}
+
+func curPrecedence(p *Parser) int {
+	if precedence, ok := precedences[p.curToken.Type]; ok {
+		return precedence
+	}
+
+	return Lowest
 }
