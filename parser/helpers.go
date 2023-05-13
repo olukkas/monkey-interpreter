@@ -37,5 +37,12 @@ func loadPrefixes(p *Parser) map[token.TokenType]prefixParseFn {
 	return map[token.TokenType]prefixParseFn{
 		token.Ident: p.parseIdentifier,
 		token.Int:   p.parseIntegerLiteral,
+		token.Bang:  p.parsePrefixExpression,
+		token.Minus: p.parsePrefixExpression,
 	}
+}
+
+func noPrefixParseFnError(p *Parser, t token.TokenType) {
+	msg := fmt.Sprintf("no prefix parse function for %s", t)
+	p.errors = append(p.errors, msg)
 }
