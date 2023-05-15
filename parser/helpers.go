@@ -39,6 +39,8 @@ func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 		token.Int:   p.parseIntegerLiteral,
 		token.Bang:  p.parsePrefixExpression,
 		token.Minus: p.parsePrefixExpression,
+		token.True:  p.parseBooleanExpression,
+		token.False: p.parseBooleanExpression,
 	}
 }
 
