@@ -35,12 +35,13 @@ func expectPeek(p *Parser, t token.TokenType) bool {
 
 func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 	return map[token.TokenType]prefixParseFn{
-		token.Ident: p.parseIdentifier,
-		token.Int:   p.parseIntegerLiteral,
-		token.Bang:  p.parsePrefixExpression,
-		token.Minus: p.parsePrefixExpression,
-		token.True:  p.parseBooleanExpression,
-		token.False: p.parseBooleanExpression,
+		token.Ident:  p.parseIdentifier,
+		token.Int:    p.parseIntegerLiteral,
+		token.Bang:   p.parsePrefixExpression,
+		token.Minus:  p.parsePrefixExpression,
+		token.True:   p.parseBooleanExpression,
+		token.False:  p.parseBooleanExpression,
+		token.Lparen: p.parseGroupedExpression,
 	}
 }
 

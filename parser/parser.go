@@ -195,3 +195,15 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 func (p *Parser) parseBooleanExpression() ast.Expression {
 	return &ast.Boolean{Token: p.curToken, Value: curTokenIs(p, token.True)}
 }
+
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.nextToken()
+
+	ext := p.parseExpression(Lowest)
+
+	if !expectPeek(p, token.Rparen) {
+		return nil
+	}
+
+	return ext
+}
