@@ -207,3 +207,44 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 
 	return ext
 }
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	expression := &ast.IfExpression{Token: p.curToken}
+
+	if !expectPeek(p, token.Lparen) {
+		return nil
+	}
+
+	p.nextToken()
+	expression.Condition = p.parseExpression(Lowest)
+
+	if !expectPeek(p, token.Rparen) {
+		return nil
+	}
+
+	if !expectPeek(p, token.Lbrace) {
+		return nil
+	}
+
+	expression.Consequence = p.parseBlockStatement()
+
+	return expression
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{Token: p.curToken}
+	block.Statements = make([]ast.Statement, 0)
+
+	p.nextToken()
+
+	for !curTokenIs(p, token.Rbrace) && !curTokenIs(p, token.Eof) {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+
+		p.nextToken()
+	}
+
+	return block
+}

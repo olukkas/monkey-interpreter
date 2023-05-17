@@ -42,6 +42,7 @@ func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 		token.True:   p.parseBooleanExpression,
 		token.False:  p.parseBooleanExpression,
 		token.Lparen: p.parseGroupedExpression,
+		token.If:     p.parseIfExpression,
 	}
 }
 
