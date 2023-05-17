@@ -23,6 +23,8 @@ func peekTokenIs(p *Parser, t token.TokenType) bool {
 	return p.peekToken.Type == t
 }
 
+// expectPeek function    check if the next toke
+// is equals the token passed
 func expectPeek(p *Parser, t token.TokenType) bool {
 	if peekTokenIs(p, t) {
 		p.nextToken()
