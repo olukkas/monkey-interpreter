@@ -80,16 +80,16 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	stmt.Name = &ast.Identifier{
-		Token: p.curToken,
-		Value: p.curToken.Literal,
-	}
+	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
 	if !expectPeek(p, token.Assing) {
 		return nil
 	}
 
-	for !curTokenIs(p, token.Semicolon) {
+	p.nextToken()
+	stmt.Value = p.parseExpression(Lowest)
+
+	if peekTokenIs(p, token.Semicolon) {
 		p.nextToken()
 	}
 
@@ -101,7 +101,9 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	for !curTokenIs(p, token.Semicolon) {
+	stmt.ReturnValue = p.parseExpression(Lowest)
+
+	if peekTokenIs(p, token.Semicolon) {
 		p.nextToken()
 	}
 
