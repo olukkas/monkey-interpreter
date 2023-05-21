@@ -85,12 +85,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Value: p.curToken.Literal,
 	}
 
-	if !peekTokenIs(p, token.Assing) {
+	if !expectPeek(p, token.Assing) {
 		return nil
 	}
 
-	// TODO: We're skipping the expression until
-	// we encounter a semicolon
 	for !curTokenIs(p, token.Semicolon) {
 		p.nextToken()
 	}
@@ -103,8 +101,6 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	// TODO: we're skipping the expressions until we
-	//encounter a semicolon
 	for !curTokenIs(p, token.Semicolon) {
 		p.nextToken()
 	}
