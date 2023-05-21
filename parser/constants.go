@@ -22,4 +22,5 @@ var precedences = map[token.TokenType]int{
 	token.Minus:    Sum,
 	token.Slash:    Product,
 	token.Asterisk: Product,
+	token.Lparen:   Call,
 }
