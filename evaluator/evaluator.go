@@ -55,6 +55,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {
 	case "!":
 		return evalBangOperatorExpression(right)
+	case "-":
+		return evalMinusPrefixOperatorExpression(right)
 	default:
 		return Null
 	}
@@ -70,5 +72,15 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 		return True
 	default:
 		return False
+	}
+}
+
+func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+	if right.Type() != object.IntegerObj {
+		return Null
+	}
+
+	return &object.Integer{
+		Value: -right.(*object.Integer).Value,
 	}
 }
