@@ -112,6 +112,15 @@ func TestIfElseExpressions(t *testing.T) {
 }
 
 func TestReturnStatemens(t *testing.T) {
+	blockCase := `
+	if(10 > 1) {
+		if(10 > 1) {
+			return 10;
+		}
+
+		return 1;
+	}
+	`
 	tests := []struct {
 		input    string
 		expected int64
@@ -120,6 +129,7 @@ func TestReturnStatemens(t *testing.T) {
 		{"return 10; 9;", 10},
 		{"return 2 * 5; 9", 10},
 		{"9; return 2 * 5; 9;", 10},
+		{blockCase, 10},
 	}
 
 	for _, tt := range tests {
