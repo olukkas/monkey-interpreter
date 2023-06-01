@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	Null  = &object.Null{}
-	True  = &object.Boolean{Value: true}
-	False = &object.Boolean{Value: false}
+	Null  = object.NewNullObject()
+	True  = object.NewBooleanObject(true)
+	False = object.NewBooleanObject(false)
 )
 
 func Eval(node ast.Node) object.Object {
@@ -24,13 +24,13 @@ func Eval(node ast.Node) object.Object {
 
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue)
-		return &object.ReturnValue{Value: val}
+		return object.NewReturnValueObject(val)
 
 	case *ast.IfExpression:
 		return evalIfExpression(node)
 
 	case *ast.IntegerLiteral:
-		return &object.Integer{Value: node.Value}
+		return object.NewIntegerObject(node.Value)
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
@@ -92,9 +92,8 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 		return object.NewErrorObject("unknow operator: -%s", right.Type())
 	}
 
-	return &object.Integer{
-		Value: -right.(*object.Integer).Value,
-	}
+	intObj := right.(*object.Integer)
+	return object.NewIntegerObject(-intObj.Value)
 }
 
 func evalInfixExpression(
@@ -128,13 +127,13 @@ func evalIntegerInfixExpression(
 
 	switch operator {
 	case "+":
-		return &object.Integer{Value: leftVal + rightVal}
+		return object.NewIntegerObject(leftVal + rightVal)
 	case "-":
-		return &object.Integer{Value: leftVal - rightVal}
+		return object.NewIntegerObject(leftVal - rightVal)
 	case "*":
-		return &object.Integer{Value: leftVal * rightVal}
+		return object.NewIntegerObject(leftVal * rightVal)
 	case "/":
-		return &object.Integer{Value: leftVal / rightVal}
+		return object.NewIntegerObject(leftVal / rightVal)
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case ">":
