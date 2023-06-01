@@ -63,14 +63,6 @@ func evalStatements(stmts []ast.Statement) object.Object {
 	return result
 }
 
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return True
-	}
-
-	return False
-}
-
 func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {
 	case "!":
@@ -200,17 +192,4 @@ func evalBlockStatement(block *ast.BlockStatement) object.Object {
 	}
 
 	return result
-}
-
-func isThruthy(obj object.Object) bool {
-	switch obj {
-	case Null:
-		return false
-	case True:
-		return true
-	case False:
-		return false
-	default:
-		return true
-	}
 }
