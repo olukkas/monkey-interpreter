@@ -1,7 +1,5 @@
 package object
 
-import "fmt"
-
 type ObjectType string
 
 const (
@@ -16,42 +14,3 @@ type Object interface {
 	Type() ObjectType
 	Inspect() string
 }
-
-type Integer struct {
-	Value int64
-}
-
-func (i *Integer) Type() ObjectType { return IntegerObj }
-func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
-
-type Boolean struct {
-	Value bool
-}
-
-func (b *Boolean) Type() ObjectType { return BooleanObj }
-func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
-
-type Null struct{}
-
-func (n *Null) Type() ObjectType { return NullObj }
-func (n *Null) Inspect() string  { return "null" }
-
-type ReturnValue struct {
-	Value Object
-}
-
-func (rv *ReturnValue) Type() ObjectType { return ReturnValueObj }
-func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
-
-type Error struct {
-	Message string
-}
-
-func NewErrorObject(format string, args ...any) *Error {
-	return &Error{
-		Message: fmt.Sprintf(format, args...),
-	}
-}
-
-func (e *Error) Type() ObjectType { return ErrorObj }
-func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
