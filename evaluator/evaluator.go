@@ -78,7 +78,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return Null
+		return object.NewErrorObject("unknow operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -97,7 +97,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.IntegerObj {
-		return Null
+		return object.NewErrorObject("unknow operator: -%s", right.Type())
 	}
 
 	return &object.Integer{
@@ -112,12 +112,18 @@ func evalInfixExpression(
 	switch {
 	case left.Type() == object.IntegerObj && right.Type() == object.IntegerObj:
 		return evalIntegerInfixExpression(operator, left, right)
+
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
+
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
+
+	case left.Type() != right.Type():
+		return object.NewErrorObject("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+
 	default:
-		return Null
+		return object.NewErrorObject("unknow operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -146,7 +152,7 @@ func evalIntegerInfixExpression(
 	case "!=":
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return Null
+		return object.NewErrorObject("unknow operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -168,8 +174,11 @@ func evalProgram(program *ast.Program) object.Object {
 	for _, statement := range program.Statements {
 		result = Eval(statement)
 
-		if returnValue, ok := result.(*object.ReturnValue); ok {
-			return returnValue.Value
+		switch result := result.(type) {
+		case *object.ReturnValue:
+			return result.Value
+		case *object.Error:
+			return result
 		}
 	}
 
@@ -182,8 +191,11 @@ func evalBlockStatement(block *ast.BlockStatement) object.Object {
 	for _, stmt := range block.Statements {
 		result = Eval(stmt)
 
-		if result != nil && result.Type() == object.ReturnValueObj {
-			return result
+		if result != nil {
+			rt := result.Type()
+			if rt == object.ReturnValueObj || rt == object.ErrorObj {
+				return result
+			}
 		}
 	}
 
