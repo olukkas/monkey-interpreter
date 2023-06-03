@@ -50,6 +50,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return args[0]
 		}
 
+		return applyFunction(function, args)
+
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 
