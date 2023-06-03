@@ -46,6 +46,7 @@ func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 		token.Lparen:   p.parseGroupedExpression,
 		token.If:       p.parseIfExpression,
 		token.Function: p.parseFunctionLiteral,
+		token.String:   p.parseStringLiteral,
 	}
 }
 

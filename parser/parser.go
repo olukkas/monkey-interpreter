@@ -334,3 +334,7 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 
 	return args
 }
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return ast.NewStringLiteral(p.curToken, p.curToken.Literal)
+}
