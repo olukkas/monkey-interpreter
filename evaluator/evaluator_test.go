@@ -212,6 +212,29 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	return true
 }
 
+func TestFunctionLiteral(t *testing.T) {
+	input := "fn(x) { x + 2 };"
+	expextedBody := "(x + 2)"
+
+	evaluated := testEval(input)
+	fn, ok := evaluated.(*object.Function)
+	if !ok {
+		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if len(fn.Parameters) != 1 {
+		t.Fatalf("function has wrong parameters. Parameters=%+v", fn.Parameters)
+	}
+
+	if fn.Parameters[0].String() != "x" {
+		t.Fatalf("parameters is not 'x'. got=%q", fn.Parameters[0])
+	}
+
+	if fn.Body.String() != expextedBody {
+		t.Fatalf("body is not %q. got=%q", expextedBody, fn.Body.String())
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
