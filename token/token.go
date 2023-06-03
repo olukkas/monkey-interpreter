@@ -7,8 +7,9 @@ const (
 	Eof     = "EOF"
 
 	// identfiers + literal
-	Ident = "IDENT"
-	Int   = "INT"
+	Ident  = "IDENT"
+	Int    = "INT"
+	String = "STRING"
 
 	// Operators
 	Assing   = "="
