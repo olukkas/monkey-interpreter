@@ -43,6 +43,14 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	return unwrapReturnValue(evaluated)
 }
 
+func operandsSameType(left, right object.Object) bool {
+	return left.Type() == right.Type()
+}
+
+func operandsAre(left, right object.Object, tp object.ObjectType) bool {
+	return operandsSameType(left, right) && left.Type() == tp
+}
+
 func extendsFucntionEnv(fn *object.Function, args []object.Object) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 

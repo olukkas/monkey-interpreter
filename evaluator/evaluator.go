@@ -166,9 +166,31 @@ func evalInfixExpression(
 	case left.Type() != right.Type():
 		return object.NewErrorObject("type mismatch: %s %s %s", left.Type(), operator, right.Type())
 
+	case operandsAre(left, right, object.StringObj):
+		return evalStringInfixExpression(operator, left, right)
+
 	default:
 		return object.NewErrorObject("unknow operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+func evalStringInfixExpression(
+	operator string,
+	left, right object.Object,
+) object.Object {
+	if operator != "+" {
+		return object.NewErrorObject(
+			"unknow operator: %s %s %s",
+			left.Type(),
+			operator,
+			right.Type(),
+		)
+	}
+
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+
+	return object.NewStringObject(leftVal + rightVal)
 }
 
 func evalIntegerInfixExpression(
