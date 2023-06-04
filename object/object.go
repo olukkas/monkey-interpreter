@@ -10,6 +10,7 @@ const (
 	ErrorObj       = "ERROR"
 	FunctionObj    = "FUNCTION"
 	StringObj      = "STRING_OBJ"
+	BuiltingObj    = "BUILTING_OBJ"
 )
 
 type Object interface {
