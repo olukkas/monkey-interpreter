@@ -193,6 +193,21 @@ func TestLetStatement(t *testing.T) {
 	}
 }
 
+func TestStringLiteral(t *testing.T) {
+	input := `"hello world"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+
+	if !ok {
+		t.Fatalf("obj is not String. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if str.Value != "hello world" {
+		t.Errorf("String has wrong value. got=%q", str.Value)
+	}
+}
+
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {

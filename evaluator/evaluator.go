@@ -58,6 +58,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IntegerLiteral:
 		return object.NewIntegerObject(node.Value)
 
+	case *ast.StringLiteral:
+		return object.NewStringObject(node.Value)
+
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
 		return evalPrefixExpression(node.Operator, right)
