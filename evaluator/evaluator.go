@@ -94,12 +94,15 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return object.NewErrorObject("identifier not found: " + node.Value)
+	if val, ok := env.Get(node.Value); ok {
+		return val
 	}
 
-	return val
+	if fn, ok := builtings[node.Value]; ok {
+		return fn
+	}
+
+	return object.NewErrorObject("Identifier not found: %s", node.Value)
 }
 
 func evalStatements(stmts []ast.Statement, env *object.Environment) object.Object {
