@@ -64,6 +64,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.Lbrace, l.ch)
 	case '}':
 		tok = newToken(token.Rbrace, l.ch)
+	case '[':
+		tok = newToken(token.Lbracket, l.ch)
+	case ']':
+		tok = newToken(token.Rbracket, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.Eof
@@ -156,6 +160,7 @@ func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
 
+// newToken function    creates a new token
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{
 		Type:    tokenType,
