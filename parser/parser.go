@@ -307,34 +307,42 @@ func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	return &ast.CallExpression{
 		Token:     p.curToken,
 		Function:  function,
-		Arguments: p.parseCallArguments(),
+		Arguments: p.parseExpressionList(token.Rparen),
 	}
-}
-
-func (p *Parser) parseCallArguments() []ast.Expression {
-	args := make([]ast.Expression, 0)
-
-	if peekTokenIs(p, token.Rparen) {
-		p.nextToken()
-		return args
-	}
-
-	p.nextToken()
-	args = append(args, p.parseExpression(Lowest))
-
-	for peekTokenIs(p, token.Comma) {
-		p.nextToken()
-		p.nextToken()
-		args = append(args, p.parseExpression(Lowest))
-	}
-
-	if !expectPeek(p, token.Rparen) {
-		return nil
-	}
-
-	return args
 }
 
 func (p *Parser) parseStringLiteral() ast.Expression {
 	return ast.NewStringLiteral(p.curToken, p.curToken.Literal)
+}
+
+func (p *Parser) parseArrayLiteral() ast.Expression {
+	array := ast.NewArray(p.curToken)
+
+	array.Elements = p.parseExpressionList(token.Rbracket)
+
+	return array
+}
+
+func (p *Parser) parseExpressionList(endToken token.TokenType) []ast.Expression {
+	list := []ast.Expression{}
+
+	if peekTokenIs(p, endToken) {
+		p.nextToken()
+		return list
+	}
+
+	p.nextToken()
+	list = append(list, p.parseExpression(Lowest))
+
+	for peekTokenIs(p, token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		list = append(list, p.parseExpression(Lowest))
+	}
+
+	if !expectPeek(p, endToken) {
+		return nil
+	}
+
+	return list
 }
