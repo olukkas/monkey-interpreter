@@ -11,6 +11,7 @@ const (
 	FunctionObj    = "FUNCTION"
 	StringObj      = "STRING_OBJ"
 	BuiltingObj    = "BUILTING_OBJ"
+	ArrayObj       = "ARRAY_OBJ"
 )
 
 type Object interface {
