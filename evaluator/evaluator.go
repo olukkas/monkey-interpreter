@@ -22,6 +22,14 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.FunctionLiteral:
 		return object.NewFunctionObject(node.Parameters, node.Body, env)
 
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+
+		return object.NewArray(elements)
+
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 
