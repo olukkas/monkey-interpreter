@@ -20,7 +20,9 @@ func NewArray(tok token.Token) *ArrayLiteral {
 
 func (a *ArrayLiteral) expressionNode() {}
 
-func (a *ArrayLiteral) TokenLiteral() string { return a.Token.Literal }
+func (a *ArrayLiteral) TokenLiteral() string {
+	return a.Token.Literal
+}
 
 func (a *ArrayLiteral) String() string {
 	var out bytes.Buffer
