@@ -11,6 +11,7 @@ const (
 	Product
 	Prefix
 	Call
+	Index
 )
 
 var precedences = map[token.TokenType]int{
@@ -23,4 +24,5 @@ var precedences = map[token.TokenType]int{
 	token.Slash:    Product,
 	token.Asterisk: Product,
 	token.Lparen:   Call,
+	token.Lbracket: Index,
 }
