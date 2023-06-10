@@ -317,7 +317,6 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := ast.NewArray(p.curToken)
-
 	array.Elements = p.parseExpressionList(token.Rbracket)
 
 	return array
@@ -345,4 +344,17 @@ func (p *Parser) parseExpressionList(endToken token.TokenType) []ast.Expression 
 	}
 
 	return list
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+
+	p.nextToken()
+	exp.Index = p.parseExpression(Lowest)
+
+	if !expectPeek(p, token.Rbracket) {
+		return nil
+	}
+
+	return exp
 }

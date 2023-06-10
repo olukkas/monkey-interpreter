@@ -62,6 +62,7 @@ func loadInfixFuncs(p *Parser) map[token.TokenType]infixParseFn {
 		token.Gt:       p.parseInfixExpression,
 		token.Asterisk: p.parseInfixExpression,
 		token.Lparen:   p.parseCallExpression,
+		token.Lbracket: p.parseIndexExpression,
 	}
 }
 
