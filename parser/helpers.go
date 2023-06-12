@@ -48,6 +48,7 @@ func loadPrefixesFuncs(p *Parser) map[token.TokenType]prefixParseFn {
 		token.Function: p.parseFunctionLiteral,
 		token.String:   p.parseStringLiteral,
 		token.Lbracket: p.parseArrayLiteral,
+		token.Lbrace:   p.parseHashLiteral,
 	}
 }
 
