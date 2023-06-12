@@ -404,6 +404,55 @@ func TestCloasures(t *testing.T) {
 	testIntegerObject(t, testEval(input), 4)
 }
 
+func TestHashLiteral(t *testing.T) {
+	input := `
+	let two = "two";
+	{
+		"one": 10 - 9,
+		two: 1 + 1,
+		"thr" + "ee": 6 / 2,
+		4: 4,
+		true: 5,
+		false: 6
+	}`
+
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Hash)
+
+	one := object.NewString("one").HashKey()
+	two := object.NewString("two").HashKey()
+	three := object.NewString("three").HashKey()
+	four := object.NewInteger(4).HashKey()
+	tHash := True.HashKey()
+	fHash := False.HashKey()
+
+	expected := map[object.HashKey]int64{
+		one:   1,
+		two:   2,
+		three: 3,
+		four:  4,
+		tHash: 5,
+		fHash: 6,
+	}
+
+	if !ok {
+		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if len(result.Pairs) != len(expected) {
+		t.Fatalf("Hash has wrong num of pairs. expected=%d got=%d", len(expected), len(result.Pairs))
+	}
+
+	for expectedKey, expectedValue := range expected {
+		pair, ok := result.Pairs[expectedKey]
+		if !ok {
+			t.Errorf("no pair for given key in Pairs")
+		}
+
+		testIntegerObject(t, pair.Value, expectedValue)
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
