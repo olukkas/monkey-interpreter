@@ -12,6 +12,7 @@ const (
 	StringObj      = "STRING_OBJ"
 	BuiltingObj    = "BUILTING_OBJ"
 	ArrayObj       = "ARRAY_OBJ"
+	HashObj        = "HASH_OBJ"
 )
 
 type Object interface {
