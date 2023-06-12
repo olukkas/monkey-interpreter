@@ -15,6 +15,10 @@ type Hash struct {
 	Pairs map[HashKey]HashPair
 }
 
+func NewHash(pairs map[HashKey]HashPair) *Hash {
+	return &Hash{pairs}
+}
+
 func (h *Hash) Type() ObjectType {
 	return HashObj
 }
