@@ -3,7 +3,7 @@ package evaluator
 import "monkey/object"
 
 func wronElementesError(expected, length int) object.Object {
-	return object.NewError("wrong number of arguments. got=%d, wat=1", length, expected)
+	return object.NewError("wrong number of arguments. got=%d, wat=%d", length, expected)
 }
 
 func wrongTypeError(funcName, expected, got string) object.Object {
