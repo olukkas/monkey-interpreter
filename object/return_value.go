@@ -4,7 +4,7 @@ type ReturnValue struct {
 	Value Object
 }
 
-func NewReturnValueObject(value Object) *ReturnValue {
+func NewReturnValue(value Object) *ReturnValue {
 	return &ReturnValue{Value: value}
 }
 

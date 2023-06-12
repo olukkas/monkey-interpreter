@@ -6,7 +6,7 @@ type Integer struct {
 	Value int64
 }
 
-func NewIntegerObject(value int64) *Integer {
+func NewInteger(value int64) *Integer {
 	return &Integer{Value: value}
 }
 

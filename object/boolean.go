@@ -6,7 +6,7 @@ type Boolean struct {
 	Value bool
 }
 
-func NewBooleanObject(value bool) *Boolean {
+func NewBoolean(value bool) *Boolean {
 	return &Boolean{Value: value}
 }
 

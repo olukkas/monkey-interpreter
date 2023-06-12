@@ -4,7 +4,7 @@ type String struct {
 	Value string
 }
 
-func NewStringObject(value string) *String {
+func NewString(value string) *String {
 	return &String{value}
 }
 
