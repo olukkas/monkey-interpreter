@@ -3,11 +3,11 @@ package evaluator
 import "monkey/object"
 
 func wronElementesError(expected, length int) object.Object {
-	return object.NewErrorObject("wrong number of arguments. got=%d, wat=1", length, expected)
+	return object.NewError("wrong number of arguments. got=%d, wat=1", length, expected)
 }
 
 func wrongTypeError(funcName, expected, got string) object.Object {
-	return object.NewErrorObject(
+	return object.NewError(
 		"argument to `%s` must be %s, got %s",
 		funcName, expected, got,
 	)
@@ -23,14 +23,14 @@ var builtings = map[string]*object.Builting{
 			switch arg := args[0].(type) {
 			case *object.String:
 				strLen := len(arg.Value)
-				return object.NewIntegerObject(int64(strLen))
+				return object.NewInteger(int64(strLen))
 
 			case *object.Array:
 				elmentsLen := len(arg.Elements)
-				return object.NewIntegerObject(int64(elmentsLen))
+				return object.NewInteger(int64(elmentsLen))
 
 			default:
-				return object.NewErrorObject(
+				return object.NewError(
 					"argument to `len` not suported, got %s",
 					args[0].Type(),
 				)
