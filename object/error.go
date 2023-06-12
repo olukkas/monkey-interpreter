@@ -6,7 +6,7 @@ type Error struct {
 	Message string
 }
 
-func NewErrorObject(format string, args ...any) *Error {
+func NewError(format string, args ...any) *Error {
 	return &Error{
 		Message: fmt.Sprintf(format, args...),
 	}

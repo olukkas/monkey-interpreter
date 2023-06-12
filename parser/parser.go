@@ -358,3 +358,31 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 
 	return exp
 }
+
+func (p *Parser) parseHashLiteral() ast.Expression {
+	hash := ast.NewHashLiteral(p.curToken)
+
+	for !peekTokenIs(p, token.Rbrace) {
+		p.nextToken()
+		key := p.parseExpression(Lowest)
+
+		if !expectPeek(p, token.Collon) {
+			return nil
+		}
+
+		p.nextToken()
+		value := p.parseExpression(Lowest)
+
+		hash.Pairs[key] = value
+
+		if !peekTokenIs(p, token.Rbrace) && !expectPeek(p, token.Comma) {
+			return nil
+		}
+	}
+
+	if !expectPeek(p, token.Rbrace) {
+		return nil
+	}
+
+	return hash
+}

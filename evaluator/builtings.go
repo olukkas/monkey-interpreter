@@ -1,9 +1,12 @@
 package evaluator
 
-import "monkey/object"
+import (
+	"fmt"
+	"monkey/object"
+)
 
 func wronElementesError(expected, length int) object.Object {
-	return object.NewError("wrong number of arguments. got=%d, wat=1", length, expected)
+	return object.NewError("wrong number of arguments. got=%d, wat=%d", length, expected)
 }
 
 func wrongTypeError(funcName, expected, got string) object.Object {
@@ -118,6 +121,16 @@ var builtings = map[string]*object.Builting{
 			newElements[length] = args[1]
 
 			return object.NewArray(newElements)
+		},
+	},
+
+	"puts": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return Null
 		},
 	},
 }

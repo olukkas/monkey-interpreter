@@ -22,6 +22,7 @@ const (
 	Gt       = ">"
 	Eq       = "=="
 	NotEq    = "!="
+	Collon   = ":"
 
 	// Delimiters
 	Comma     = ","

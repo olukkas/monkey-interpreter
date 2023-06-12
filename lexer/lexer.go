@@ -31,8 +31,13 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.Assing, l.ch)
 		}
+
 	case '-':
 		tok = newToken(token.Minus, l.ch)
+
+	case ':':
+		tok = newToken(token.Collon, l.ch)
+
 	case '!':
 		if l.peekChar() == '=' {
 			ch := l.ch
@@ -42,38 +47,54 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.Bang, l.ch)
 		}
+
 	case '/':
 		tok = newToken(token.Slash, l.ch)
+
 	case '*':
 		tok = newToken(token.Asterisk, l.ch)
+
 	case '<':
 		tok = newToken(token.Lt, l.ch)
+
 	case '>':
 		tok = newToken(token.Gt, l.ch)
+
 	case ';':
 		tok = newToken(token.Semicolon, l.ch)
+
 	case '(':
 		tok = newToken(token.Lparen, l.ch)
+
 	case ')':
 		tok = newToken(token.Rparen, l.ch)
+
 	case ',':
 		tok = newToken(token.Comma, l.ch)
+
 	case '+':
 		tok = newToken(token.Plus, l.ch)
+
 	case '{':
 		tok = newToken(token.Lbrace, l.ch)
+
 	case '}':
 		tok = newToken(token.Rbrace, l.ch)
+
 	case '[':
 		tok = newToken(token.Lbracket, l.ch)
+
 	case ']':
 		tok = newToken(token.Rbracket, l.ch)
+
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.Eof
+
 	case '"':
 		tok.Type = token.String
 		tok.Literal = l.readString()
+
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()

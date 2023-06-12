@@ -2,7 +2,7 @@ package object
 
 type Null struct{}
 
-func NewNullObject() *Null {
+func NewNull() *Null {
 	return &Null{}
 }
 

@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	Null  = object.NewNullObject()
-	True  = object.NewBooleanObject(true)
-	False = object.NewBooleanObject(false)
+	Null  = object.NewNull()
+	True  = object.NewBoolean(true)
+	False = object.NewBoolean(false)
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -35,6 +35,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		return evalIndexExpression(left, index)
 
+	case *ast.HashLiteral:
+		return evalHashLiteral(node, env)
+
 	case *ast.ArrayLiteral:
 		elements := evalExpressions(node.Elements, env)
 		if len(elements) == 1 && isError(elements[0]) {
@@ -48,7 +51,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
-		return object.NewReturnValueObject(val)
+		return object.NewReturnValue(val)
 
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
@@ -77,10 +80,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalIfExpression(node, env)
 
 	case *ast.IntegerLiteral:
-		return object.NewIntegerObject(node.Value)
+		return object.NewInteger(node.Value)
 
 	case *ast.StringLiteral:
-		return object.NewStringObject(node.Value)
+		return object.NewString(node.Value)
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
@@ -123,7 +126,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		return fn
 	}
 
-	return object.NewErrorObject("Identifier not found: %s", node.Value)
+	return object.NewError("Identifier not found: %s", node.Value)
 }
 
 func evalStatements(stmts []ast.Statement, env *object.Environment) object.Object {
@@ -147,7 +150,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return object.NewErrorObject("unknow operator: %s%s", operator, right.Type())
+		return object.NewError("unknow operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -166,11 +169,11 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.IntegerObj {
-		return object.NewErrorObject("unknow operator: -%s", right.Type())
+		return object.NewError("unknow operator: -%s", right.Type())
 	}
 
 	intObj := right.(*object.Integer)
-	return object.NewIntegerObject(-intObj.Value)
+	return object.NewInteger(-intObj.Value)
 }
 
 func evalInfixExpression(
@@ -188,13 +191,13 @@ func evalInfixExpression(
 		return nativeBoolToBooleanObject(left != right)
 
 	case left.Type() != right.Type():
-		return object.NewErrorObject("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+		return object.NewError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
 
 	case operandsAre(left, right, object.StringObj):
 		return evalStringInfixExpression(operator, left, right)
 
 	default:
-		return object.NewErrorObject("unknow operator: %s %s %s", left.Type(), operator, right.Type())
+		return object.NewError("unknow operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -203,7 +206,7 @@ func evalStringInfixExpression(
 	left, right object.Object,
 ) object.Object {
 	if operator != "+" {
-		return object.NewErrorObject(
+		return object.NewError(
 			"unknow operator: %s %s %s",
 			left.Type(),
 			operator,
@@ -214,7 +217,7 @@ func evalStringInfixExpression(
 	leftVal := left.(*object.String).Value
 	rightVal := right.(*object.String).Value
 
-	return object.NewStringObject(leftVal + rightVal)
+	return object.NewString(leftVal + rightVal)
 }
 
 func evalIntegerInfixExpression(
@@ -226,13 +229,13 @@ func evalIntegerInfixExpression(
 
 	switch operator {
 	case "+":
-		return object.NewIntegerObject(leftVal + rightVal)
+		return object.NewInteger(leftVal + rightVal)
 	case "-":
-		return object.NewIntegerObject(leftVal - rightVal)
+		return object.NewInteger(leftVal - rightVal)
 	case "*":
-		return object.NewIntegerObject(leftVal * rightVal)
+		return object.NewInteger(leftVal * rightVal)
 	case "/":
-		return object.NewIntegerObject(leftVal / rightVal)
+		return object.NewInteger(leftVal / rightVal)
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case ">":
@@ -242,7 +245,7 @@ func evalIntegerInfixExpression(
 	case "!=":
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return object.NewErrorObject("unknow operator: %s %s %s", left.Type(), operator, right.Type())
+		return object.NewError("unknow operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -297,8 +300,11 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	case left.Type() == object.ArrayObj && index.Type() == object.IntegerObj:
 		return evalArrayIndexExpression(left, index)
 
+	case left.Type() == object.HashObj:
+		return evalHashIndexExpression(left, index)
+
 	default:
-		return object.NewErrorObject("index operator not suported: %s", left.Type())
+		return object.NewError("index operator not suported: %s", left.Type())
 	}
 }
 
@@ -312,4 +318,49 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	}
 
 	return arrayObj.Elements[idx]
+}
+
+func evalHashLiteral(
+	node *ast.HashLiteral,
+	env *object.Environment,
+) object.Object {
+	pairs := make(map[object.HashKey]object.HashPair)
+
+	for keyNode, valueNode := range node.Pairs {
+		key := Eval(keyNode, env)
+		if isError(key) {
+			return key
+		}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return object.NewError("unusable as hash key: %s", key.Type())
+		}
+
+		value := Eval(valueNode, env)
+		if isError(value) {
+			return value
+		}
+
+		hashed := hashKey.HashKey()
+		pairs[hashed] = object.HashPair{Key: key, Value: value}
+	}
+
+	return object.NewHash(pairs)
+}
+
+func evalHashIndexExpression(hash, index object.Object) object.Object {
+	hashObj := hash.(*object.Hash)
+
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return object.NewError("unusable as hash key: %s", index.Type())
+	}
+
+	pair, ok := hashObj.Pairs[key.HashKey()]
+	if !ok {
+		return Null
+	}
+
+	return pair.Value
 }
