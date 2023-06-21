@@ -1,6 +1,9 @@
 package lexer
 
-import "monkey/token"
+import (
+	"monkey/token"
+	"unicode"
+)
 
 type Lexer struct {
 	input        string
@@ -117,7 +120,7 @@ func (l *Lexer) NextToken() token.Token {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+	for unicode.IsSpace(rune(l.ch)) {
 		l.readChar()
 	}
 }
@@ -174,11 +177,11 @@ func (l *Lexer) readNumber() string {
 }
 
 func isLetter(ch byte) bool {
-	return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_'
+	return unicode.IsLetter(rune(ch))
 }
 
 func isDigit(ch byte) bool {
-	return '0' <= ch && ch <= '9'
+	return unicode.IsDigit(rune(ch))
 }
 
 // newToken function    creates a new token
