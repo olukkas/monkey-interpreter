@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"github.com/stretchr/testify/assert"
 	"monkey/token"
 	"testing"
 )
@@ -125,23 +126,14 @@ func TestNextToken(t *testing.T) {
 		{token.Eof, ""},
 	}
 
+	asserts := assert.New(t)
+
 	l := New(input)
 
-	for i, tt := range testes {
+	for _, tt := range testes {
 		tok := l.NextToken()
 
-		if tok.Type != tt.expectedType {
-			t.Fatalf(
-				"tests[%d] - tokentype worng. expected=%q, got=%q",
-				i, tt.expectedType, tok.Type,
-			)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf(
-				"tests[%d] - liteal wrong. expected=%q, got%q",
-				i, tt.expectedLiteral, tok.Literal,
-			)
-		}
+		asserts.Equal(tok.Type, tt.expectedType, "token type wrong")
+		asserts.Equal(tok.Literal, tt.expectedLiteral, "literal wrong")
 	}
 }
