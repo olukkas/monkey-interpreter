@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"github.com/stretchr/testify/assert"
 	"monkey/lexer"
 	"monkey/object"
 	"monkey/parser"
@@ -111,7 +112,7 @@ func TestIfElseExpressions(t *testing.T) {
 	}
 }
 
-func TestReturnStatemens(t *testing.T) {
+func TestReturnStatements(t *testing.T) {
 	blockCase := `
 	if(10 > 1) {
 		if(10 > 1) {
@@ -166,14 +167,9 @@ func TestErrorHandling(t *testing.T) {
 		evaluated := testEval(tt.input)
 
 		errObj, ok := evaluated.(*object.Error)
-		if !ok {
-			t.Errorf("no error object returnd. expected=%q, got=%q", evaluated, evaluated)
-			continue
-		}
+		assert.True(t, ok)
 
-		if errObj.Message != tt.expectedMessage {
-			t.Errorf("wrong error message. expected=%q, got=%q", tt.expectedMessage, errObj.Message)
-		}
+		assert.Equal(t, errObj.Message, tt.expectedMessage)
 	}
 }
 
@@ -198,14 +194,8 @@ func TestStringLiteral(t *testing.T) {
 
 	evaluated := testEval(input)
 	str, ok := evaluated.(*object.String)
-
-	if !ok {
-		t.Fatalf("obj is not String. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if str.Value != "hello world" {
-		t.Errorf("String has wrong value. got=%q", str.Value)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, str.Value, "hello world")
 }
 
 func TestStringConcatenation(t *testing.T) {
@@ -213,13 +203,8 @@ func TestStringConcatenation(t *testing.T) {
 
 	evaluated := testEval(input)
 	str, ok := evaluated.(*object.String)
-	if !ok {
-		t.Fatalf("object is not *ast.String. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if str.Value != "hello world" {
-		t.Errorf("String has wrong value. got=%q", str.Value)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, str.Value, "hello world")
 }
 
 func TestBuiltinFunctions(t *testing.T) {
@@ -243,13 +228,8 @@ func TestBuiltinFunctions(t *testing.T) {
 
 		case string:
 			errObj, ok := evaluated.(*object.Error)
-			if !ok {
-				t.Errorf("object is not Error. got=%T", evaluated)
-				continue
-			}
-			if errObj.Message != expected {
-				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
-			}
+			assert.True(t, ok)
+			assert.Equal(t, errObj.Message, expected)
 		}
 	}
 }
@@ -259,14 +239,8 @@ func TestArrayLiterals(t *testing.T) {
 
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Array)
-	if !ok {
-		t.Fatalf("object is not Array. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if len(result.Elements) != 3 {
-		t.Fatalf("array has wrong num of elements. got=%d",
-			len(result.Elements))
-	}
+	assert.True(t, ok)
+	assert.Len(t, result.Elements, 3)
 
 	testIntegerObject(t, result.Elements[0], 1)
 	testIntegerObject(t, result.Elements[1], 4)
@@ -275,19 +249,8 @@ func TestArrayLiterals(t *testing.T) {
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
-	if !ok {
-		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
-		return false
-	}
-
-	if result.Value != expected {
-		t.Errorf(
-			"object has wrong value. got=%d, want=%d",
-			result.Value,
-			expected,
-		)
-		return false
-	}
+	assert.True(t, ok)
+	assert.Equal(t, result.Value, expected)
 
 	return true
 }
@@ -351,26 +314,17 @@ func TestArrayIndexExpressions(t *testing.T) {
 }
 
 func TestFunctionLiteral(t *testing.T) {
+	asserts := assert.New(t)
+
 	input := "fn(x) { x + 2 };"
-	expextedBody := "(x + 2)"
+	expectedBody := "(x + 2)"
 
 	evaluated := testEval(input)
 	fn, ok := evaluated.(*object.Function)
-	if !ok {
-		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if len(fn.Parameters) != 1 {
-		t.Fatalf("function has wrong parameters. Parameters=%+v", fn.Parameters)
-	}
-
-	if fn.Parameters[0].String() != "x" {
-		t.Fatalf("parameters is not 'x'. got=%q", fn.Parameters[0])
-	}
-
-	if fn.Body.String() != expextedBody {
-		t.Fatalf("body is not %q. got=%q", expextedBody, fn.Body.String())
-	}
+	asserts.True(ok)
+	asserts.Len(fn.Parameters, 1)
+	asserts.Equal(fn.Parameters[0].String(), "x")
+	asserts.Equal(fn.Body.String(), expectedBody)
 }
 
 func TestFunctionApplication(t *testing.T) {
@@ -391,7 +345,7 @@ func TestFunctionApplication(t *testing.T) {
 	}
 }
 
-func TestCloasures(t *testing.T) {
+func TestClosures(t *testing.T) {
 	input := `
 	let newAdder = fn(x) {
 		fn(y) { x  + y };
@@ -435,20 +389,12 @@ func TestHashLiteral(t *testing.T) {
 		fHash: 6,
 	}
 
-	if !ok {
-		t.Fatalf("Eval didn't return Hash. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if len(result.Pairs) != len(expected) {
-		t.Fatalf("Hash has wrong num of pairs. expected=%d got=%d", len(expected), len(result.Pairs))
-	}
+	assert.True(t, ok)
+	assert.Len(t, result.Pairs, len(expected))
 
 	for expectedKey, expectedValue := range expected {
 		pair, ok := result.Pairs[expectedKey]
-		if !ok {
-			t.Errorf("no pair for given key in Pairs")
-		}
-
+		assert.True(t, ok)
 		testIntegerObject(t, pair.Value, expectedValue)
 	}
 }

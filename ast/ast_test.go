@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"github.com/stretchr/testify/assert"
 	"monkey/token"
 	"testing"
 )
@@ -24,7 +25,5 @@ func TestString(t *testing.T) {
 
 	representation := program.String()
 
-	if representation != "let myVar = anotherVar;" {
-		t.Errorf("program.String wrong. got=%q", program.String())
-	}
+	assert.Equal(t, representation, "let myVar = anotherVar;")
 }
