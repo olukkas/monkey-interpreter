@@ -31,7 +31,7 @@ func Start(in io.Reader, out io.Writer) {
 	env := object.NewEnvironment()
 
 	for {
-		fmt.Fprintf(out, Prompt)
+		fmt.Fprintf(out, "%s", Prompt)
 		scanned := scanner.Scan()
 
 		if !scanned {
@@ -50,18 +50,39 @@ func Start(in io.Reader, out io.Writer) {
 
 		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+			_, err := io.WriteString(out, evaluated.Inspect())
+			if err != nil {
+				return
+			}
+
+			_, err = io.WriteString(out, "\n")
+			if err != nil {
+				return
+			}
 		}
 	}
 }
 
 func printParserErrors(out io.Writer, errors []string) {
-	io.WriteString(out, MonkeyFace)
-	io.WriteString(out, "Woops! We ran into some monkey business here!\n")
-	io.WriteString(out, "parser errors:\n")
+	_, err := io.WriteString(out, MonkeyFace)
+	if err != nil {
+		return
+	}
+
+	_, err = io.WriteString(out, "Woops! We ran into some monkey business here!\n")
+	if err != nil {
+		return
+	}
+
+	_, err = io.WriteString(out, "parser errors:\n")
+	if err != nil {
+		return
+	}
 
 	for _, msg := range errors {
-		io.WriteString(out, "\t"+msg+"\n")
+		_, err = io.WriteString(out, "\t"+msg+"\n")
+		if err != nil {
+			break
+		}
 	}
 }
