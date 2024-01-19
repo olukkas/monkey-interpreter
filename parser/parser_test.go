@@ -96,7 +96,7 @@ func TestLiteralIntegerExpression(t *testing.T) {
 
 	literal, ok := stmt.Expression.(*ast.IntegerLiteral)
 	assert.True(t, ok)
-	assert.Equal(t, literal.Value, 5)
+	assert.Equal(t, literal.Value, int64(5))
 	assert.Equal(t, literal.TokenLiteral(), "5")
 }
 

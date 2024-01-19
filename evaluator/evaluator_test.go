@@ -160,7 +160,7 @@ func TestErrorHandling(t *testing.T) {
 		{"5; true + false; 5", "unknow operator: BOOLEAN + BOOLEAN"},
 		{"if (10 > 1) { true + false; }", "unknow operator: BOOLEAN + BOOLEAN"},
 		{blockCase, "unknow operator: BOOLEAN + BOOLEAN"},
-		{"foobar", "identifier not found: foobar"},
+		{"foobar", "Identifier not found: foobar"},
 	}
 
 	for _, tt := range tests {
